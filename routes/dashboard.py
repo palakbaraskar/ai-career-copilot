@@ -7,8 +7,7 @@ dashboard_bp = Blueprint('dashboard', __name__)
 
 @dashboard_bp.route('/dashboard')
 @login_required
-def user_dashboard():
-    # Fetch user metrics
+def user_dashboard():   
     user_resumes = Resume.query.filter_by(user_id=current_user.id).order_by(Resume.created_at.desc()).all()
     user_matches = JobMatch.query.filter_by(user_id=current_user.id).order_by(JobMatch.created_at.desc()).all()
     user_sessions = InterviewSession.query.filter_by(user_id=current_user.id).order_by(InterviewSession.created_at.desc()).all()
@@ -21,7 +20,6 @@ def user_dashboard():
 
     total_interviews = len(user_sessions)
 
-    # Compile recent activity feed
     activities = []
     for r in user_resumes[:5]:
         activities.append({
@@ -51,8 +49,6 @@ def user_dashboard():
             'id': s.id,
             'url': f'/interview/view/{s.id}'
         })
-
-    # Sort all recent activities by date descending
     activities.sort(key=lambda x: x['date'], reverse=True)
     recent_activities = activities[:8]
 

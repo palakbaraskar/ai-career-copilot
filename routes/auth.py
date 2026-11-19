@@ -29,7 +29,6 @@ def register():
             flash('Passwords do not match.', 'error')
             return render_template('register.html', name=name, email=email)
 
-        # Check existing user
         try:
             existing_user = User.query.filter_by(email=email).first()
             if existing_user:

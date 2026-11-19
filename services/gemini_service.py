@@ -3,39 +3,33 @@ import re
 import json
 import google.generativeai as genai
 
-# Configure Gemini with the existing API key
+# Setup Gemini API configuration
 api_key = os.getenv("GEMINI_API_KEY", "").strip()
 if api_key and api_key != "your_gemini_api_key_here":
     try:
         genai.configure(api_key=api_key)
     except Exception as e:
-        print(f"[GEMINI INIT WARNING] {e}")
+        print(f"Error configuring Gemini: {e}")
 
 
 def get_gemini_model():
-    """Dynamically query Google AI Studio and find the active model supporting generateContent."""
+    # Find active flash model
     try:
         models_list = list(genai.list_models())
-        # First priority: Free Flash models
+        for m in models_list:
+            if "generateContent" in m.supported_generation_methods and "flash" in m.name.lower():
+                return genai.GenerativeModel(m.name)
         for m in models_list:
             if "generateContent" in m.supported_generation_methods:
-                if "flash" in m.name.lower():
-                    print(f"[AI MODEL DETECTED] Using: {m.name}")
-                    return genai.GenerativeModel(m.name)
-        
-        # Second priority: Any available model
-        for m in models_list:
-            if "generateContent" in m.supported_generation_methods:
-                print(f"[AI MODEL DETECTED] Using: {m.name}")
                 return genai.GenerativeModel(m.name)
     except Exception as e:
-        print(f"[LIST MODELS INFO] {e}")
+        print(f"Error listing models: {e}")
 
     return genai.GenerativeModel("gemini-2.0-flash")
 
 
 def clean_json_response(text: str) -> str:
-    """Extract JSON object cleanly from model output even if surrounded by commentary."""
+    # Extract json block from text
     match = re.search(r"(\{.*\})", text, re.DOTALL)
     if match:
         return match.group(1).strip()
@@ -43,7 +37,7 @@ def clean_json_response(text: str) -> str:
     return text.rstrip("`").strip()
 
 
-# ── Intelligent Resilient Fallbacks (Ensures 100% demo uptime) ───────────────
+# Fallback responses for local testing
 def generate_fallback_resume_analysis(text: str) -> dict:
     lower = text.lower()
     score = 78
@@ -211,7 +205,6 @@ def generate_fallback_evaluation(question: str, answer: str) -> dict:
 
 
 def ask_gemini(prompt: str) -> dict:
-    """Execute Gemini AI inference with comprehensive fallback to ensure 100% uptime."""
     current_key = os.getenv("GEMINI_API_KEY", "").strip()
     
     if current_key and current_key != "your_gemini_api_key_here":
@@ -220,13 +213,11 @@ def ask_gemini(prompt: str) -> dict:
             response = model.generate_content(prompt)
             raw = clean_json_response(response.text)
             parsed = json.loads(raw)
-            print("[INFO] Successfully received response from Google Gemini API!")
             return parsed
         except Exception as e:
-            print(f"[WARNING] Live Gemini API call issue: {e}")
-            print("[INFO] Seamlessly generating intelligent dynamic response for user request.")
+            print(f"Gemini API error: {e}")
     
-    # Intelligent Dynamic Dispatcher
+    # Handle response types
     if "mock interview session" in prompt.lower() or "interview session" in prompt.lower() or "interview questions" in prompt.lower():
         title = "Software Engineer"
         match = re.search(r"JOB TITLE:\s*([^\n\r]+)", prompt)
