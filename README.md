@@ -1,109 +1,126 @@
-# 🚀 AI Career Co-Pilot (3-in-1 Intelligent Suite)
+🚀 AI Career Co-Pilot
 
-An end-to-end intelligent career accelerator powered by **Python Flask**, **Google Gemini 1.5 Flash API**, and a modern **HTML5 / CSS3 / Vanilla JavaScript** Single-Page interface.
+An AI-powered career toolkit built with Python Flask, PostgreSQL and the Google Gemini API. It helps job seekers analyze their resume, match it against job descriptions, and practise interviews, with every result saved to a personal account.
 
-Designed specifically to be **resume-worthy, production-ready, and easy to explain during technical interviews**.
+🌟 Features
+📄 Resume ATS Analyzer
+Upload a PDF (text extracted in memory with PyPDF2) or paste plain text.
+Get an ATS-style score, summary, strengths, weaknesses and section scores.
+See missing keywords and concrete improvement suggestions.
+🎯 Job Matcher & Skill Gap Analysis
+Compare your resume with any job description.
+See matched skills vs missing skills and an overall match score.
+Get a tailored summary, action items and a step-by-step learning roadmap.
+🎙️ Mock Interview Lab
+Generate interview questions for any job title.
+Type your answers and get a score, feedback, an ideal answer outline and a follow-up question.
+🔐 Accounts & Dashboard
+Register, log in and log out with Flask-Login.
+Passwords are stored as hashes (Werkzeug), never as plain text.
+A login-protected dashboard shows your own activity.
+All results are stored in PostgreSQL and linked to your account.
+🛠️ Tech Stack
+Layer	Technologies	Role
+Backend	Python, Flask, Flask-CORS	Routing (blueprints), request handling
+Authentication	Flask-Login, Werkzeug	Sessions and password hashing
+Database	PostgreSQL, Flask-SQLAlchemy, psycopg2-binary	Data storage and ORM models
+AI	Google Gemini API (google-generativeai)	Resume analysis, job matching, interview feedback
+Document Processing	PyPDF2	PDF text extraction
+Frontend	HTML, CSS, JavaScript, Jinja2 templates	User interface
+Configuration	python-dotenv	Environment variables
+📁 Project Structure
+ai-career-copilot/
+├── app.py                 # Application factory, extensions, blueprint registration
+├── config.py              # Configuration from environment variables
+├── db.py                  # SQLAlchemy instance
+├── models.py              # Database models (5 tables)
+├── routes/                # Flask blueprints
+│   ├── auth.py            #   registration, login, logout
+│   ├── dashboard.py       #   user dashboard
+│   ├── resume.py          #   resume ATS analysis
+│   ├── job_match.py       #   job matching and skill gaps
+│   └── interview.py       #   mock interview lab
+├── services/              # Supporting logic (AI and document processing)
+├── templates/             # HTML templates
+├── static/                # CSS and JavaScript
+├── test_database.py       # Database, authentication and access checks
+├── requirements.txt       # Python dependencies
+├── .env.example           # Example environment variables
+├── POSTGRES_SETUP.md      # Extra PostgreSQL setup notes
+└── INTERVIEW_GUIDE.md     # Notes for explaining the project in interviews
+🗄️ Database Overview
 
----
+Five tables are created automatically on startup.
 
-## 🌟 The 3 Integrated Projects
+Table	Purpose
+users	Name, email, hashed password and creation time of each account
+resumes	Analyzed resumes: name, ATS score, summary and full analysis (JSON)
+job_matches	Job comparisons: title, description, match score and full result (JSON)
+interview_sessions	Mock interview sessions: job title, optional description and generated questions (JSON)
+interview_answers	Answered questions: question, answer, score, feedback and full evaluation (JSON)
 
-### 1. 📄 AI Resume ATS Analyzer
-- **Dual Ingestion**: Upload resume PDFs (parsed in-memory via `PyPDF2`) or paste plain text.
-- **ATS Metric Algorithm**: Generates an algorithmic 0–100 ATS compatibility score based on formatting, experience depth, skill taxonomy, and education.
-- **Actionable Critique**: Highlights strong points, flags resume red flags (e.g., lack of measurable metrics), and provides concrete bullet-point rewrites.
-- **Keyword Gap Analysis**: Identifies missing high-impact industry keywords to pass automated resume screening filters.
+A user has many resumes, job matches and interview sessions. An interview session has many answers. Deleting a user also deletes their records.
 
-### 2. 🎯 Smart Job Matcher & Skill Gap Analyzer
-- **Semantic Job Alignment**: Compares candidate profile directly against any target Job Description (JD).
-- **Taxonomy Breakdown**: Segregates qualifications into **Matched Competencies** vs **Critical Missing Skills**.
-- **Role-Tailored Summary**: Generates a 1st-person professional summary calibrated specifically to the job opening for one-click copy.
-- **Curated Upskilling Roadmap**: Formulates a structured step-by-step learning pathway with specific resource suggestions and estimated timelines.
-
-### 3. 🎙️ AI Mock Interview Prep Lab
-- **Dynamic Role Simulation**: Generates custom Technical, Behavioral, and Situational questions for any given job title and description.
-- **Interactive Practice Studio**: Candidates type their responses in real-time.
-- **STAR Methodology Audit**: Evaluates answers across **Situation, Task, Action, and Result** pillars.
-- **1–10 Scoring & Ideal Benchmark**: Provides instant constructive feedback, ideal answer outlines, and anticipated follow-up questions from the hiring manager.
-
----
-
-## 🛠️ Tech Stack & Architecture
-
-| Layer | Technologies | Role |
-|-------|--------------|------|
-| **Backend** | Python 3.10+, Flask, Flask-CORS | REST API routing, file streaming, prompt orchestration |
-| **AI / LLM** | Google Gemini 1.5 Flash (`google-generativeai`) | High-speed, cost-effective inference with zero-shot JSON schemas |
-| **Document Processing** | PyPDF2, BytesIO | In-memory binary PDF text extraction without disk I/O |
-| **Frontend** | HTML5, Modern CSS (CSS Variables, Flexbox/Grid), Vanilla ES6+ JS | Zero heavy frontend dependencies; fast, responsive SPA experience |
-| **Security & Config** | `python-dotenv` | API key isolation and environment configuration |
-
----
-
-## ⚡ Quick Start Setup
-
-### Step 1: Clone or Open Directory
-```bash
-cd "C:\Users\Palak Baraskar\OneDrive\Desktop\ai-career-copilot"
-```
-
-### Step 2: Create a Virtual Environment & Activate
-```bash
+⚡ Quick Start
+1. Clone and set up the environment
+bash
+git clone https://github.com/palakbaraskar/ai-career-copilot.git
+cd ai-career-copilot
+bash
 # Windows
 python -m venv venv
 venv\Scripts\activate
 
-# macOS / Linux
+# Linux / macOS
 python3 -m venv venv
 source venv/bin/activate
-```
-
-### Step 3: Install Dependencies
-```bash
+bash
 pip install -r requirements.txt
-```
+2. Create the PostgreSQL database
+bash
+# Windows:  psql -U postgres
+# Linux:    sudo -u postgres psql
+# macOS:    psql postgres
+sql
+CREATE DATABASE career_copilot_db;
+3. Get a Gemini API key
 
-### Step 4: Add Your Free Google Gemini API Key
-1. Get a free API key at [Google AI Studio](https://aistudio.google.com/app/apikey).
-2. Create a `.env` file in the project root:
-```env
-GEMINI_API_KEY=AIzaSyYourActualGeminiKeyHere
-```
+Create a free key at Google AI Studio.
 
-### Step 5: Run the Server
-```bash
+4. Configure .env
+
+Copy .env.example to .env (copy on Windows, cp on Linux/macOS) and fill in your values:
+
+env
+GEMINI_API_KEY=your_gemini_api_key_here
+DATABASE_URL=postgresql://postgres:your_password@localhost:5432/career_copilot_db
+SECRET_KEY=a_long_random_secret_string
+
+.env is listed in .gitignore; never commit it.
+
+5. Run the app
+bash
 python app.py
-```
-Open your browser at: **`http://127.0.0.1:5000`**
 
----
+Open http://127.0.0.1:5000, create an account at /register, log in, and open the dashboard.
 
-## 📁 Project File Structure
+The console shows whether PostgreSQL connected. If it cannot connect, the app falls back to a local SQLite file (career_copilot.db), so check the message to see which database is in use.
 
-```
-ai-career-copilot/
-├── app.py                      # Flask REST microservice & Gemini endpoints
-├── requirements.txt            # Python dependencies
-├── .env.example                # Example environment variables file
-├── README.md                   # Full setup & architectural overview
-├── INTERVIEW_GUIDE.md          # Complete interview talking guide & cheatsheet
-├── templates/
-│   ├── base.html               # Master layout with navbar, footer, & modals
-│   ├── index.html              # Hub overview with metrics & project cards
-│   ├── resume_analyzer.html    # Project 1: ATS Resume Parser & Grader
-│   ├── job_matcher.html        # Project 2: Semantic JD Matcher & Gap Roadmap
-│   └── interview_prep.html     # Project 3: STAR Mock Interview Chamber
-└── static/
-    ├── css/
-    │   └── style.css           # Modern dark-mode styling with CSS variables
-    └── js/
-        └── main.js             # Client controller, API fetch calls, & sample data
-```
+🧪 Database Tests
+bash
+python test_database.py
 
----
+Checks table creation, user creation and password hashing, saving and linking of records, per-user data separation, record deletion, the registration endpoint and login protection of /dashboard. It creates temporary test accounts in the configured database and removes them at the end, so use a development database.
 
-## 💡 How to Demo in 30 Seconds
-Every page comes equipped with a **"Load Sample"** button at the top right:
-1. Go to **Resume Analyzer** → Click `Load Sample Resume` → Click `Run Gemini ATS Audit`.
-2. Go to **Job Matcher** → Click `Load Sample Match Data` → Click `Run Semantic Gap Analysis`.
-3. Go to **Interview Prep Lab** → Click `Load Sample Software Role` → Click `Generate AI Mock Interview Session` → Pick a question, type your answer, and review the **STAR audit**!
+🔮 Future Improvements
+Deploy the application online
+Database migrations with Flask-Migrate
+Automated tests with pytest
+Rate limiting for AI requests
+Export reports as PDF
+Progress charts on the dashboard
+👩‍💻 Author
+
+Palak Baraskar
+B.Tech CSE, Indore Institute of Science and Technology
+GitHub: github.com/palakbaraskar
