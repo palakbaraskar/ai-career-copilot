@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Resume Analysis - {{ resume.resume_name }} | AI Career Co-Pilot{% endblock %}
+
+{% block content %}
+<div class="tool-page-header">
+    <div class="tool-breadcrumb">
+        <a href="/dashboard"><i class="fa-solid fa-arrow-left"></i> Dashboard</a> / <span>Resume History</span>
+    </div>
+    <div class="tool-title-row">
+        <div>
+            <h1><i class="fa-solid fa-file-pdf text-blue"></i> {{ resume.resume_name }}</h1>
+            <p>Analyzed on {{ resume.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+        </div>
+        <div class="action-btn-row">
+            <a href="/resume-analyzer" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> New Analysis</a>
+            <a href="/dashboard" class="btn btn-outline btn-sm"><i class="fa-solid fa-table-columns"></i> Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<div class="analysis-content card">
+    <!-- Top Score Row -->
+    <div class="score-summary-card">
+        <div class="score-circle-container">
+            <div class="score-circle">
+                <span id="ats-score-value">{{ resume.ats_score }}</span>
+                <span class="score-unit">/100</span>
+            </div>
+            <span class="score-label">Overall ATS Score</span>
+        </div>
+        <div class="pitch-container">
+            <div class="pitch-badge"><i class="fa-solid fa-bolt"></i> Elevator Pitch</div>
+            <p class="candidate-pitch">{{ resume.analysis_result.get('one_liner_pitch', 'Candidate profile evaluated successfully.') }}</p>
+            <p class="candidate-summary">{{ resume.summary }}</p>
+        </div>
+    </div>
+
+    <!-- Section Breakdown Bar -->
+    {% set sections = resume.analysis_result.get('section_scores', {}) %}
+    <div class="section-card mt-4">
+        <h4><i class="fa-solid fa-sliders"></i> Section Breakdown</h4>
+        <div class="section-bars-grid">
+            <div class="bar-item">
+                <div class="bar-header">
+                    <span>Experience</span>
+                    <span>{{ sections.get('experience', 75) }}%</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width: {{ sections.get('experience', 75) }}%"></div></div>
+            </div>
+            <div class="bar-item">
+                <div class="bar-header">
+                    <span>Skills &amp; Tech</span>
+                    <span>{{ sections.get('skills', 80) }}%</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width: {{ sections.get('skills', 80) }}%"></div></div>
+            </div>
+            <div class="bar-item">
+                <div class="bar-header">
+                    <span>Education</span>
+                    <span>{{ sections.get('education', 85) }}%</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width: {{ sections.get('education', 85) }}%"></div></div>
+            </div>
+            <div class="bar-item">
+                <div class="bar-header">
+                    <span>Formatting &amp; Parse</span>
+                    <span>{{ sections.get('formatting', 70) }}%</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width: {{ sections.get('formatting', 70) }}%"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Best-Fit Roles -->
+    <div class="section-card mt-4">
+        <h4><i class="fa-solid fa-briefcase"></i> Best-Fit Roles</h4>
+        <div class="roles-tags-list">
+            {% for role in resume.analysis_result.get('top_roles', []) %}
+            <span class="role-pill">{{ role }}</span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Strengths & Weaknesses -->
+    <div class="grid-2col mt-4">
+        <div class="critique-card strengths-card">
+            <h4><i class="fa-solid fa-circle-check text-green"></i> Key Strengths</h4>
+            <ul class="checklist green">
+                {% for str_item in resume.analysis_result.get('strengths', []) %}
+                <li>{{ str_item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="critique-card weaknesses-card">
+            <h4><i class="fa-solid fa-triangle-exclamation text-amber"></i> Red Flags &amp; Weaknesses</h4>
+            <ul class="checklist amber">
+                {% for weak_item in resume.analysis_result.get('weaknesses', []) %}
+                <li>{{ weak_item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Missing Keywords -->
+    <div class="section-card mt-4">
+        <h4><i class="fa-solid fa-tags"></i> Recommended ATS Keywords to Add</h4>
+        <div class="tags-container">
+            {% for kw in resume.analysis_result.get('keywords_missing', []) %}
+            <span class="tag-pill">+ {{ kw }}</span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Improvements -->
+    <div class="section-card mt-4">
+        <h4><i class="fa-solid fa-lightbulb"></i> Actionable Bullet-Point Improvements</h4>
+        <div class="improvements-list">
+            {% for imp in resume.analysis_result.get('improvements', []) %}
+            <div class="improvement-item"><i class="fa-solid fa-angle-right"></i> {{ imp }}</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -450,6 +450,7 @@ function initInterviewPrep() {
     let activeQuestions = [];
     let currentQuestion = null;
     let targetRole = "";
+    let currentSessionId = null;
 
     // Load Sample Button
     const sampleBtn = document.getElementById("load-sample-role-btn");
@@ -503,6 +504,7 @@ function initInterviewPrep() {
             }
 
             activeQuestions = data.questions || [];
+            currentSessionId = data.session_id || null;
             document.getElementById("interviewer-intro-text").textContent = `"${data.intro || 'Welcome to your interview simulation round.'}"`;
             renderQuestionsBank(activeQuestions);
 
@@ -607,7 +609,8 @@ function initInterviewPrep() {
                         job_title: targetRole,
                         question: currentQuestion.question,
                         category: currentQuestion.category,
-                        answer: answer
+                        answer: answer,
+                        session_id: currentSessionId
                     })
                 });
 

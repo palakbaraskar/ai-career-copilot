@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Interview Session - {{ session_record.job_title }} | AI Career Co-Pilot{% endblock %}
+
+{% block content %}
+<div class="tool-page-header">
+    <div class="tool-breadcrumb">
+        <a href="/dashboard"><i class="fa-solid fa-arrow-left"></i> Dashboard</a> / <span>Interview History</span>
+    </div>
+    <div class="tool-title-row">
+        <div>
+            <h1><i class="fa-solid fa-comments text-purple"></i> {{ session_record.job_title }}</h1>
+            <p>Created on {{ session_record.created_at.strftime('%B %d, %Y at %I:%M %p') }} &bull; {{ answers|length }} evaluated answers</p>
+        </div>
+        <div class="action-btn-row">
+            <a href="/interview-prep" class="btn btn-primary btn-sm"><i class="fa-solid fa-microphone"></i> Practice Live</a>
+            <a href="/dashboard" class="btn btn-outline btn-sm"><i class="fa-solid fa-table-columns"></i> Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<div class="analysis-content">
+    <!-- Generated Question Pool -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-list-check"></i> Generated Questions in this Session</h3>
+            <span class="badge badge-primary">{{ session_record.questions|length }} Questions</span>
+        </div>
+        <div class="questions-history-grid">
+            {% for q in session_record.questions %}
+            <div class="q-history-box">
+                <div class="q-meta">
+                    <span class="q-category">{{ q.get('category', 'Technical') }}</span>
+                    <span class="q-difficulty badge badge-info">{{ q.get('difficulty', 'Medium') }}</span>
+                </div>
+                <strong>{{ loop.index }}. {{ q.get('question', '') }}</strong>
+                {% if q.get('hint') %}
+                <p class="q-hint-sub"><i class="fa-solid fa-lightbulb text-amber"></i> {{ q.get('hint') }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Evaluated Candidate Answers -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-clipboard-check text-green"></i> Evaluated Answers &amp; STAR Audits</h3>
+            <span class="badge badge-success">{{ answers|length }} Completed</span>
+        </div>
+
+        {% if answers %}
+            <div class="answers-history-list">
+                {% for ans in answers %}
+                <div class="evaluated-answer-item card mt-3">
+                    <div class="eval-header-row">
+                        <div>
+                            <span class="q-tag">Question</span>
+                            <h4>{{ ans.question }}</h4>
+                        </div>
+                        <div class="eval-score-badge">
+                            <span class="score-num">{{ ans.score }}</span><span class="score-den">/10</span>
+                        </div>
+                    </div>
+
+                    <div class="candidate-ans-quote">
+                        <span class="quote-tag"><i class="fa-solid fa-quote-left"></i> Your Response:</span>
+                        <p>{{ ans.answer }}</p>
+                    </div>
+
+                    <!-- STAR Methodology Review -->
+                    {% set star = ans.evaluation_result.get('star_analysis', {}) %}
+                    <div class="star-audit-box mt-3">
+                        <h5><i class="fa-solid fa-star text-amber"></i> STAR Method Evaluation</h5>
+                        <div class="star-grid">
+                            <div class="star-cell">
+                                <span class="star-letter">S</span>
+                                <strong>Situation</strong>
+                                <p>{{ star.get('situation', 'N/A') }}</p>
+                            </div>
+                            <div class="star-cell">
+                                <span class="star-letter">T</span>
+                                <strong>Task</strong>
+                                <p>{{ star.get('task', 'N/A') }}</p>
+                            </div>
+                            <div class="star-cell">
+                                <span class="star-letter">A</span>
+                                <strong>Action</strong>
+                                <p>{{ star.get('action', 'N/A') }}</p>
+                            </div>
+                            <div class="star-cell">
+                                <span class="star-letter">R</span>
+                                <strong>Result</strong>
+                                <p>{{ star.get('result', 'N/A') }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Constructive Feedback -->
+                    <div class="feedback-box mt-3">
+                        <strong><i class="fa-solid fa-comments"></i> AI Feedback:</strong>
+                        <p>{{ ans.feedback }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-history-state">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <p>No answers evaluated for this session yet. Practice answering in the <a href="/interview-prep">Interview Prep Lab</a>!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

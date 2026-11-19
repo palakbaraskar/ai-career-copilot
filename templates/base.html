@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AI Career Co-Pilot | Final Year Project{% endblock %}</title>
+    <title>{% block title %}AI Career Co-Pilot{% endblock %}</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,16 +33,43 @@
                     <li><a href="/resume-analyzer" class="{% if request.path == '/resume-analyzer' %}active{% endif %}"><i class="fa-solid fa-file-pdf"></i> Resume Analyzer</a></li>
                     <li><a href="/job-matcher" class="{% if request.path == '/job-matcher' %}active{% endif %}"><i class="fa-solid fa-code-compare"></i> Job Matcher</a></li>
                     <li><a href="/interview-prep" class="{% if request.path == '/interview-prep' %}active{% endif %}"><i class="fa-solid fa-comments"></i> Interview Prep</a></li>
+                    {% if current_user.is_authenticated %}
+                    <li><a href="/dashboard" class="{% if request.path == '/dashboard' %}active{% endif %}"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+                    {% endif %}
                 </ul>
             </nav>
 
             <div class="nav-right">
-                <span class="api-pill">
-                    <span class="live-dot"></span> Flask + Gemini API
-                </span>
+                {% if current_user.is_authenticated %}
+                <div class="user-menu-pill">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span class="user-greeting">{{ current_user.name.split()[0] }}</span>
+                    <a href="/logout" class="btn-logout" title="Log Out"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                </div>
+                {% else %}
+                <div class="auth-btn-group">
+                    <a href="/login" class="btn-nav-login"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+                    <a href="/register" class="btn-nav-register"><i class="fa-solid fa-user-plus"></i> Register</a>
+                </div>
+                {% endif %}
             </div>
         </div>
     </header>
+
+    <!-- Flash Messages Container -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages-container">
+          {% for category, message in messages %}
+            <div class="flash-alert flash-{{ category }}">
+                <i class="fa-solid {% if category == 'error' %}fa-circle-exclamation{% elif category == 'success' %}fa-circle-check{% else %}fa-circle-info{% endif %}"></i>
+                <span>{{ message }}</span>
+                <button type="button" class="flash-close" onclick="this.parentElement.remove();">&times;</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
     <!-- Main Content Area -->
     <main class="page-container">
@@ -58,7 +85,7 @@
             <div class="footer-row">
                 <div class="footer-col-main">
                     <h4><i class="fa-solid fa-briefcase"></i> AI Career Co-Pilot</h4>
-                    <p>A Full-Stack Career Platform built using Python Flask, Google Gemini API, PyPDF2, and Vanilla Web Stack (HTML5/CSS3/JS).</p>
+                    <p>A Full-Stack Career Platform built using Python Flask, PostgreSQL, Google Gemini API, PyPDF2, and Vanilla Web Stack (HTML5/CSS3/JS).</p>
                 </div>
                 <div class="footer-col-meta">
                     <span class="student-credit"><strong>Developer:</strong> Palak Baraskar</span>

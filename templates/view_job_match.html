@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Job Match - {{ match_record.job_title }} | AI Career Co-Pilot{% endblock %}
+
+{% block content %}
+<div class="tool-page-header">
+    <div class="tool-breadcrumb">
+        <a href="/dashboard"><i class="fa-solid fa-arrow-left"></i> Dashboard</a> / <span>Job Match History</span>
+    </div>
+    <div class="tool-title-row">
+        <div>
+            <h1><i class="fa-solid fa-code-compare text-blue"></i> {{ match_record.job_title }}</h1>
+            <p>Analyzed on {{ match_record.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+        </div>
+        <div class="action-btn-row">
+            <a href="/job-matcher" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> New Match</a>
+            <a href="/dashboard" class="btn btn-outline btn-sm"><i class="fa-solid fa-table-columns"></i> Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<div class="analysis-content card">
+    <!-- Top Match Banner -->
+    <div class="match-hero-card">
+        <div class="match-score-badge">
+            <span class="score-huge">{{ match_record.match_score }}%</span>
+            <span class="match-score-sub">Compatibility Score</span>
+        </div>
+        <div class="match-verdict-box">
+            <div class="verdict-row">
+                <span class="badge badge-success">{{ match_record.match_result.get('verdict', 'Good Match') }}</span>
+                <span class="badge badge-info">{{ match_record.match_result.get('experience_match', 'Meets Requirements') }}</span>
+            </div>
+            <p class="verdict-text">{{ match_record.match_result.get('verdict_reason', '') }}</p>
+            <div class="salary-tip-row">
+                <span><i class="fa-solid fa-money-bill-wave text-green"></i> Est. Range: <strong>{{ match_record.match_result.get('salary_range', '$110,000 - $140,000') }}</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Matched vs Missing Skills -->
+    <div class="grid-2col mt-4">
+        <div class="critique-card matched-skills-box">
+            <h4><i class="fa-solid fa-circle-check text-green"></i> Matched Competencies</h4>
+            <div class="tags-container green-tags">
+                {% for skill in match_record.match_result.get('matched_skills', []) %}
+                <span class="tag-pill">{{ skill }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="critique-card missing-skills-box">
+            <h4><i class="fa-solid fa-circle-xmark text-red"></i> Missing Skills &amp; Gaps</h4>
+            <div class="tags-container red-tags">
+                {% for skill in match_record.match_result.get('missing_skills', []) %}
+                <span class="tag-pill">{{ skill }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tailored Summary -->
+    <div class="section-card mt-4">
+        <h4><i class="fa-solid fa-wand-magic-sparkles text-purple"></i> Role-Tailored Professional Summary</h4>
+        <div class="quote-box mt-3">
+            {{ match_record.match_result.get('tailored_summary', '') }}
+        </div>
+    </div>
+
+    <!-- Learning Roadmap -->
+    <div class="section-card mt-4">
+        <h4><i class="fa-solid fa-road"></i> Rapid Skill-Bridging Roadmap</h4>
+        <div class="roadmap-timeline">
+            {% for step in match_record.match_result.get('learning_roadmap', []) %}
+            <div class="roadmap-step">
+                <div class="roadmap-step-left">
+                    <span class="roadmap-num">{{ loop.index }}</span>
+                    <div class="roadmap-step-info">
+                        <strong>{{ step.get('skill', '') }}</strong>
+                        <span>{{ step.get('resource', '') }}</span>
+                    </div>
+                </div>
+                <span class="roadmap-time-badge"><i class="fa-regular fa-clock"></i> {{ step.get('time', '') }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Interview Insider Tip -->
+    {% if match_record.match_result.get('interview_tip') %}
+    <div class="insider-tip-card mt-4">
+        <div class="tip-icon"><i class="fa-solid fa-lightbulb"></i></div>
+        <div>
+            <h4>Recruiter &amp; Hiring Manager Insider Tip</h4>
+            <p>{{ match_record.match_result.get('interview_tip') }}</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -21,3 +21,9 @@ Thumbs.db
 # VS Code / IDE Settings
 .vscode/
 .idea/
+
+# Local SQLite and Backup files
+*.db
+*.sqlite3
+*.backup
+instance/
