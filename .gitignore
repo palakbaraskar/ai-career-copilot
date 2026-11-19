@@ -1,0 +1,23 @@
+# Security / Environment variables (CRITICAL: Never push API keys!)
+.env
+*.env
+
+# Python Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# VS Code / IDE Settings
+.vscode/
+.idea/

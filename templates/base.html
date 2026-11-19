@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Career Co-Pilot | Final Year Project{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="/" class="brand-logo">
+                <div class="logo-box">
+                    <i class="fa-solid fa-briefcase"></i>
+                </div>
+                <div class="brand-info">
+                    <span class="brand-title">Career<strong>CoPilot</strong></span>
+                </div>
+            </a>
+            
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/" class="{% if request.path == '/' %}active{% endif %}"><i class="fa-solid fa-house"></i> Home</a></li>
+                    <li><a href="/resume-analyzer" class="{% if request.path == '/resume-analyzer' %}active{% endif %}"><i class="fa-solid fa-file-pdf"></i> Resume Analyzer</a></li>
+                    <li><a href="/job-matcher" class="{% if request.path == '/job-matcher' %}active{% endif %}"><i class="fa-solid fa-code-compare"></i> Job Matcher</a></li>
+                    <li><a href="/interview-prep" class="{% if request.path == '/interview-prep' %}active{% endif %}"><i class="fa-solid fa-comments"></i> Interview Prep</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-right">
+                <span class="api-pill">
+                    <span class="live-dot"></span> Flask + Gemini API
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="page-container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Project Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-row">
+                <div class="footer-col-main">
+                    <h4><i class="fa-solid fa-briefcase"></i> AI Career Co-Pilot</h4>
+                    <p>A Full-Stack Career Platform built using Python Flask, Google Gemini API, PyPDF2, and Vanilla Web Stack (HTML5/CSS3/JS).</p>
+                </div>
+                <div class="footer-col-meta">
+                    <span class="student-credit"><strong>Developer:</strong> Palak Baraskar</span>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025-2026 AI Career Co-Pilot &bull; All Rights Reserved</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global App Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

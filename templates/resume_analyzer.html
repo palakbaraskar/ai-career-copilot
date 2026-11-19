@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Resume ATS Analyzer | AI Career Co-Pilot{% endblock %}
+
+{% block content %}
+<div class="tool-page-header">
+    <div class="tool-breadcrumb">
+        <a href="/"><i class="fa-solid fa-arrow-left"></i> Home</a> / <span>Module 01</span>
+    </div>
+    <div class="tool-title-row">
+        <div>
+            <h1><i class="fa-solid fa-file-pdf"></i> Resume ATS Analyzer</h1>
+            <p>Upload your resume in PDF format or paste plain text to evaluate ATS compatibility score, formatting, keyword density, and bullet-point improvements.</p>
+        </div>
+        <div>
+            <button id="load-sample-resume-btn" class="btn btn-outline btn-sm">
+                <i class="fa-solid fa-paste"></i> Load Sample Resume
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="tool-layout">
+    <!-- Left Input Panel -->
+    <div class="input-panel card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-cloud-arrow-up"></i> Provide Your Resume</h3>
+            <span class="badge">PDF or Text</span>
+        </div>
+
+        <form id="resume-form">
+            <!-- Tabs for Upload Mode -->
+            <div class="input-tabs">
+                <button type="button" class="tab-btn active" data-tab="upload-tab">
+                    <i class="fa-solid fa-file-pdf"></i> Upload PDF
+                </button>
+                <button type="button" class="tab-btn" data-tab="paste-tab">
+                    <i class="fa-solid fa-align-left"></i> Paste Text
+                </button>
+            </div>
+
+            <!-- Tab 1: File Upload -->
+            <div id="upload-tab" class="tab-content active">
+                <div class="dropzone" id="resume-dropzone">
+                    <input type="file" id="resume-file" name="file" accept=".pdf,.txt" class="file-input">
+                    <div class="dropzone-inner">
+                        <div class="dropzone-icon">
+                            <i class="fa-solid fa-file-arrow-up"></i>
+                        </div>
+                        <h4>Drop your resume PDF here</h4>
+                        <p>or <span class="highlight">browse files</span> from your computer</p>
+                        <span class="file-limits">Supports PDF, TXT (up to 10MB)</span>
+                    </div>
+                    <div id="selected-file-info" class="selected-file-info hidden">
+                        <i class="fa-solid fa-file-pdf text-purple"></i>
+                        <span id="file-name-display">resume.pdf</span>
+                        <button type="button" id="remove-file-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Paste Text -->
+            <div id="paste-tab" class="tab-content">
+                <div class="form-group">
+                    <label for="resume-text">Paste Resume Content:</label>
+                    <textarea id="resume-text" name="text" rows="12" class="form-control" placeholder="Paste your complete resume text here (Education, Experience, Skills, Projects)..."></textarea>
+                </div>
+            </div>
+
+            <button type="submit" id="analyze-resume-btn" class="btn btn-primary btn-block mt-4">
+                <i class="fa-solid fa-sparkles"></i> Run Gemini ATS Audit
+            </button>
+        </form>
+
+        <div class="ats-info-box">
+            <h4><i class="fa-solid fa-circle-info"></i> How the ATS Audit Works</h4>
+            <p>Our prompt instructs Gemini 1.5 Flash to simulate Fortune-500 Applicant Tracking Systems like Workday, Taleo, and Greenhouse by analyzing parseability, skill density, and impact metrics.</p>
+        </div>
+    </div>
+
+    <!-- Right Results Panel -->
+    <div class="results-panel card" id="results-panel">
+        <!-- Initial Blank State -->
+        <div id="initial-state" class="state-container">
+            <div class="state-icon">
+                <i class="fa-solid fa-chart-simple"></i>
+            </div>
+            <h3>Your Analysis Will Appear Here</h3>
+            <p>Upload a resume PDF or paste text on the left, then click <strong>Run Gemini ATS Audit</strong> to view full analytics.</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="state-container hidden">
+            <div class="spinner"></div>
+            <h3>Analyzing Resume with Gemini AI...</h3>
+            <p>Parsing PDF text streams, evaluating section weights, and cross-referencing industry skill benchmarks.</p>
+        </div>
+
+        <!-- Rendered Results Container -->
+        <div id="analysis-content" class="analysis-content hidden">
+            <!-- Top Score Row -->
+            <div class="score-summary-card">
+                <div class="score-circle-container">
+                    <div class="score-circle" id="ats-score-circle">
+                        <span id="ats-score-value">85</span>
+                        <span class="score-unit">/100</span>
+                    </div>
+                    <span class="score-label">Overall ATS Score</span>
+                </div>
+                <div class="pitch-container">
+                    <div class="pitch-badge"><i class="fa-solid fa-bolt"></i> AI Elevator Pitch</div>
+                    <p id="candidate-pitch" class="candidate-pitch">Loading pitch...</p>
+                    <p id="candidate-summary" class="candidate-summary">Loading summary...</p>
+                </div>
+            </div>
+
+            <!-- Section Breakdown Bar -->
+            <div class="section-card mt-4">
+                <h4><i class="fa-solid fa-sliders"></i> Section Breakdown</h4>
+                <div class="section-bars-grid">
+                    <div class="bar-item">
+                        <div class="bar-header">
+                            <span>Experience</span>
+                            <span id="bar-exp-val">80%</span>
+                        </div>
+                        <div class="progress-track"><div id="bar-exp" class="progress-fill" style="width: 80%"></div></div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-header">
+                            <span>Skills & Tech</span>
+                            <span id="bar-skills-val">90%</span>
+                        </div>
+                        <div class="progress-track"><div id="bar-skills" class="progress-fill" style="width: 90%"></div></div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-header">
+                            <span>Education</span>
+                            <span id="bar-edu-val">85%</span>
+                        </div>
+                        <div class="progress-track"><div id="bar-edu" class="progress-fill" style="width: 85%"></div></div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-header">
+                            <span>Formatting & ATS Parse</span>
+                            <span id="bar-format-val">75%</span>
+                        </div>
+                        <div class="progress-track"><div id="bar-format" class="progress-fill" style="width: 75%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Recommended Roles -->
+            <div class="section-card mt-4">
+                <h4><i class="fa-solid fa-briefcase"></i> Best-Fit Industry Roles</h4>
+                <div id="top-roles-container" class="roles-tags-list"></div>
+            </div>
+
+            <!-- Two-Column Strengths & Weaknesses -->
+            <div class="grid-2col mt-4">
+                <div class="critique-card strengths-card">
+                    <h4><i class="fa-solid fa-circle-check text-green"></i> Key Strengths</h4>
+                    <ul id="strengths-list" class="checklist green"></ul>
+                </div>
+
+                <div class="critique-card weaknesses-card">
+                    <h4><i class="fa-solid fa-triangle-exclamation text-amber"></i> Red Flags & Weaknesses</h4>
+                    <ul id="weaknesses-list" class="checklist amber"></ul>
+                </div>
+            </div>
+
+            <!-- Missing High Impact Keywords -->
+            <div class="section-card mt-4">
+                <h4><i class="fa-solid fa-tags"></i> Recommended ATS Keywords to Add</h4>
+                <p class="section-subtext">Incorporating these missing keywords will significantly boost match scores in automated resume filters.</p>
+                <div id="keywords-container" class="tags-container"></div>
+            </div>
+
+            <!-- Actionable Improvements -->
+            <div class="section-card mt-4">
+                <h4><i class="fa-solid fa-lightbulb"></i> Actionable Bullet-Point Improvements</h4>
+                <div id="improvements-container" class="improvements-list"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

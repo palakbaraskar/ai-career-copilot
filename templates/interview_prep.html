@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}AI Interview Prep Lab | AI Career Co-Pilot{% endblock %}
+
+{% block content %}
+<div class="tool-page-header">
+    <div class="tool-breadcrumb">
+        <a href="/"><i class="fa-solid fa-arrow-left"></i> Home</a> / <span>Module 03</span>
+    </div>
+    <div class="tool-title-row">
+        <div>
+            <h1><i class="fa-solid fa-comments"></i> AI Mock Interview Simulator</h1>
+            <p>Generate role-specific interview questions (Behavioral, Technical, Situational) and evaluate answers against the structured STAR methodology rubric.</p>
+        </div>
+        <div>
+            <button id="load-sample-role-btn" class="btn btn-outline btn-sm">
+                <i class="fa-solid fa-paste"></i> Load Sample Role
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="interview-flow-container">
+    <!-- Step 1: Setup Panel -->
+    <div class="card setup-card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-sliders"></i> 1. Setup Your Mock Interview</h3>
+            <span class="badge badge-primary">Step 1</span>
+        </div>
+        <form id="generate-questions-form" class="interview-setup-grid">
+            <div class="form-group">
+                <label for="prep-job-title"><i class="fa-solid fa-id-badge"></i> Target Job Title *</label>
+                <input type="text" id="prep-job-title" class="form-control" placeholder="e.g. Senior Full Stack Developer, Data Analyst..." required>
+            </div>
+
+            <div class="form-group">
+                <label for="prep-job-desc"><i class="fa-solid fa-briefcase"></i> Job Description (Optional)</label>
+                <textarea id="prep-job-desc" class="form-control" rows="2" placeholder="Paste JD excerpt to make questions ultra-tailored..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="prep-resume"><i class="fa-solid fa-file-user"></i> Your Background / Resume (Optional)</label>
+                <textarea id="prep-resume" class="form-control" rows="2" placeholder="Brief summary of your projects or tech stack..."></textarea>
+            </div>
+
+            <div class="form-actions-full">
+                <button type="submit" id="generate-questions-btn" class="btn btn-primary">
+                    <i class="fa-solid fa-sparkles"></i> Generate AI Mock Interview Session
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Step 2 & 3: Questions List & Interactive Answer Sandbox (Hidden until generated) -->
+    <div id="interview-session-container" class="interview-session-container hidden">
+        <!-- Interviewer Intro Bar -->
+        <div class="interviewer-banner card">
+            <div class="interviewer-avatar">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <div class="interviewer-meta">
+                <span class="interviewer-name">Gemini AI Technical Interviewer</span>
+                <p id="interviewer-intro-text" class="interviewer-intro">"Welcome to your interview round. Select a question below to begin your simulated response."</p>
+            </div>
+        </div>
+
+        <div class="interview-dual-grid mt-4">
+            <!-- Left: Question Pool -->
+            <div class="card question-bank-card">
+                <div class="card-header">
+                    <h4><i class="fa-solid fa-list-check"></i> Interview Questions (<span id="question-count">0</span>)</h4>
+                    <span class="subtext">Click any question to practice</span>
+                </div>
+                <div id="questions-list" class="questions-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Right: Interactive Answer & Scoring Studio -->
+            <div class="card answer-studio-card">
+                <div class="card-header">
+                    <h4><i class="fa-solid fa-microphone-lines text-emerald"></i> Answer Sandbox</h4>
+                    <span id="active-question-category" class="badge badge-info">Select a Question</span>
+                </div>
+
+                <div class="studio-body">
+                    <div class="active-question-box">
+                        <span class="q-label">Current Question:</span>
+                        <h3 id="current-question-text" class="active-q-text">Please select a question from the left panel to begin your response.</h3>
+                        <div id="current-question-hint" class="hint-box hidden">
+                            <i class="fa-solid fa-circle-question"></i> <span id="hint-text"></span>
+                        </div>
+                    </div>
+
+                    <form id="submit-answer-form" class="mt-3">
+                        <div class="form-group">
+                            <label for="candidate-answer-input">Your Response (Type as you would speak in an interview):</label>
+                            <textarea id="candidate-answer-input" class="form-control" rows="8" placeholder="Format your answer logically (Situation -> Task -> Action -> Result) or explain your technical thought process clearly..."></textarea>
+                        </div>
+                        <div class="studio-actions">
+                            <button type="submit" id="evaluate-answer-btn" class="btn btn-emerald" disabled>
+                                <i class="fa-solid fa-magnifying-glass-chart"></i> Submit for AI STAR Evaluation
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Evaluation Loading State -->
+                    <div id="eval-loading" class="state-container hidden mt-4">
+                        <div class="spinner"></div>
+                        <h4>Auditing Response Against STAR Criteria...</h4>
+                    </div>
+
+                    <!-- Evaluation Results Container -->
+                    <div id="evaluation-result" class="evaluation-result hidden mt-4">
+                        <div class="eval-score-header">
+                            <div class="score-pill-big">
+                                <span id="eval-score-num">0</span><span class="score-denom">/10</span>
+                            </div>
+                            <div class="eval-verdict-col">
+                                <span id="eval-grade-badge" class="badge badge-success">Good</span>
+                                <p id="eval-feedback-text" class="eval-feedback-para"></p>
+                            </div>
+                        </div>
+
+                        <!-- STAR Method Matrix -->
+                        <div class="star-audit-box mt-3">
+                            <h5><i class="fa-solid fa-star text-amber"></i> STAR Method Breakdown</h5>
+                            <div class="star-grid">
+                                <div class="star-cell">
+                                    <span class="star-letter">S</span>
+                                    <strong>Situation</strong>
+                                    <p id="star-situation">--</p>
+                                </div>
+                                <div class="star-cell">
+                                    <span class="star-letter">T</span>
+                                    <strong>Task</strong>
+                                    <p id="star-task">--</p>
+                                </div>
+                                <div class="star-cell">
+                                    <span class="star-letter">A</span>
+                                    <strong>Action</strong>
+                                    <p id="star-action">--</p>
+                                </div>
+                                <div class="star-cell">
+                                    <span class="star-letter">R</span>
+                                    <strong>Result</strong>
+                                    <p id="star-result">--</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Two Column Strengths & Improvements -->
+                        <div class="grid-2col mt-3">
+                            <div class="critique-card strengths-card">
+                                <h6><i class="fa-solid fa-check text-green"></i> What Worked</h6>
+                                <ul id="eval-strengths" class="checklist green"></ul>
+                            </div>
+                            <div class="critique-card weaknesses-card">
+                                <h6><i class="fa-solid fa-arrow-trend-up text-amber"></i> Areas to Refine</h6>
+                                <ul id="eval-improvements" class="checklist amber"></ul>
+                            </div>
+                        </div>
+
+                        <!-- Ideal Answer Model -->
+                        <div class="ideal-answer-box mt-3">
+                            <h6><i class="fa-solid fa-graduation-cap text-purple"></i> Benchmark Answer Outline</h6>
+                            <pre id="ideal-answer-text"></pre>
+                        </div>
+
+                        <!-- Follow-up Probe -->
+                        <div class="follow-up-box mt-3">
+                            <div class="follow-up-icon"><i class="fa-solid fa-reply"></i></div>
+                            <div>
+                                <strong>Anticipated Interviewer Follow-Up:</strong>
+                                <p id="follow-up-text">--</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

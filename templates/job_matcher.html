@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Job Matcher & Gap Analyzer | AI Career Co-Pilot{% endblock %}
+
+{% block content %}
+<div class="tool-page-header">
+    <div class="tool-breadcrumb">
+        <a href="/"><i class="fa-solid fa-arrow-left"></i> Home</a> / <span>Module 02</span>
+    </div>
+    <div class="tool-title-row">
+        <div>
+            <h1><i class="fa-solid fa-code-compare"></i> Job Description Matcher</h1>
+            <p>Paste candidate resume details alongside target job description to compute match percentage, identify missing required skills, and generate a learning roadmap.</p>
+        </div>
+        <div>
+            <button id="load-sample-match-btn" class="btn btn-outline btn-sm">
+                <i class="fa-solid fa-paste"></i> Load Sample Match Data
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="tool-layout">
+    <!-- Left Input Panel: Dual Inputs -->
+    <div class="input-panel card">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-code-compare"></i> Candidate Profile vs. Target Role</h3>
+        </div>
+
+        <form id="job-match-form">
+            <div class="form-group">
+                <label for="match-resume-text">
+                    <i class="fa-solid fa-user-astronaut"></i> Your Resume / Profile:
+                </label>
+                <textarea id="match-resume-text" class="form-control" rows="8" placeholder="Paste your resume text or experience highlights here..."></textarea>
+            </div>
+
+            <div class="form-group mt-3">
+                <label for="match-job-desc">
+                    <i class="fa-solid fa-briefcase"></i> Target Job Description (JD):
+                </label>
+                <textarea id="match-job-desc" class="form-control" rows="8" placeholder="Paste the target job description (responsibilities, required skills, qualifications)..."></textarea>
+            </div>
+
+            <button type="submit" id="run-match-btn" class="btn btn-primary btn-block mt-4">
+                <i class="fa-solid fa-crosshairs"></i> Run Semantic Gap Analysis
+            </button>
+        </form>
+    </div>
+
+    <!-- Right Results Panel -->
+    <div class="results-panel card" id="match-results-panel">
+        <!-- Initial Blank State -->
+        <div id="match-initial-state" class="state-container">
+            <div class="state-icon">
+                <i class="fa-solid fa-chart-pie"></i>
+            </div>
+            <h3>Compare Any Role Against Your Profile</h3>
+            <p>Fill in both your resume details and the target job description on the left, then click <strong>Run Semantic Gap Analysis</strong>.</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="match-loading-state" class="state-container hidden">
+            <div class="spinner"></div>
+            <h3>Cross-Referencing Requirements with Gemini...</h3>
+            <p>Evaluating semantic skill overlaps, prerequisite thresholds, and generating targeted upskilling roadmaps.</p>
+        </div>
+
+        <!-- Rendered Results Container -->
+        <div id="match-content" class="analysis-content hidden">
+            <!-- Top Match Banner -->
+            <div class="match-hero-card">
+                <div class="match-score-badge">
+                    <span id="match-score-val" class="score-huge">0%</span>
+                    <span class="match-score-sub">Compatibility Score</span>
+                </div>
+                <div class="match-verdict-box">
+                    <div class="verdict-row">
+                        <span id="match-verdict-pill" class="badge badge-success">Good Match</span>
+                        <span id="experience-match-pill" class="badge badge-info">Meets Requirements</span>
+                    </div>
+                    <p id="match-verdict-reason" class="verdict-text">Analyzing alignment...</p>
+                    <div class="salary-tip-row">
+                        <span><i class="fa-solid fa-money-bill-wave text-green"></i> Est. Range: <strong id="salary-range-display">$110,000 - $135,000</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills Comparison Section: Matched vs Missing -->
+            <div class="grid-2col mt-4">
+                <div class="critique-card matched-skills-box">
+                    <h4><i class="fa-solid fa-circle-check text-green"></i> Matched Competencies</h4>
+                    <p class="section-subtext">Verified overlaps present in both resume and role.</p>
+                    <div id="matched-skills-container" class="tags-container green-tags"></div>
+                </div>
+
+                <div class="critique-card missing-skills-box">
+                    <h4><i class="fa-solid fa-circle-xmark text-red"></i> Missing Skills & Gaps</h4>
+                    <p class="section-subtext">Keywords and tools strictly emphasized in the JD.</p>
+                    <div id="missing-skills-container" class="tags-container red-tags"></div>
+                </div>
+            </div>
+
+            <!-- Tailored Professional Summary -->
+            <div class="section-card mt-4">
+                <div class="section-card-header">
+                    <h4><i class="fa-solid fa-wand-magic-sparkles text-purple"></i> Role-Tailored Professional Summary</h4>
+                    <button id="copy-summary-btn" class="btn btn-outline btn-sm">
+                        <i class="fa-solid fa-copy"></i> Copy to Clipboard
+                    </button>
+                </div>
+                <p class="section-subtext">Inject this tailored 1st-person summary directly at the top of your resume when applying for this role.</p>
+                <div class="quote-box" id="tailored-summary-content">
+                    Generating customized summary...
+                </div>
+            </div>
+
+            <!-- Learning Roadmap -->
+            <div class="section-card mt-4">
+                <h4><i class="fa-solid fa-road"></i> Rapid Skill-Bridging Roadmap</h4>
+                <p class="section-subtext">Curated pathway to close critical skill deficits prior to technical screening.</p>
+                <div id="roadmap-container" class="roadmap-timeline"></div>
+            </div>
+
+            <!-- Interview Insider Tip -->
+            <div class="insider-tip-card mt-4">
+                <div class="tip-icon"><i class="fa-solid fa-lightbulb"></i></div>
+                <div>
+                    <h4>Recruiter & Hiring Manager Insider Tip</h4>
+                    <p id="interview-tip-text">Loading tip...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

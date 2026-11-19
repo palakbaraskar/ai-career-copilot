@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Project Hero Banner -->
+<div class="project-hero">
+    <h1 class="hero-title">
+        AI Career Co-Pilot
+    </h1>
+    <p class="hero-subtitle">
+        An Automated Career Assistance System integrating <strong>ATS Resume Evaluation</strong>, <strong>Job Description Alignment</strong>, and <strong>AI-Powered Mock Interview Preparation</strong>.
+    </p>
+
+    <!-- Quick Navigation Action Buttons -->
+    <div class="hero-btn-row">
+        <a href="/resume-analyzer" class="btn btn-primary"><i class="fa-solid fa-file-pdf"></i> Module 1: Resume Analyzer</a>
+        <a href="/job-matcher" class="btn btn-secondary"><i class="fa-solid fa-code-compare"></i> Module 2: Job Matcher</a>
+        <a href="/interview-prep" class="btn btn-secondary"><i class="fa-solid fa-comments"></i> Module 3: Interview Prep</a>
+    </div>
+</div>
+
+<!-- 3 Project Modules Section -->
+<div class="modules-section">
+    <div class="section-title-wrap">
+        <h2>System Architecture &amp; Modules</h2>
+        <p>The application is divided into three interconnected functional modules:</p>
+    </div>
+
+    <div class="modules-grid">
+        <!-- Module 1 -->
+        <div class="module-card">
+            <div class="module-top">
+                <span class="module-num">01</span>
+                <span class="module-tag">Resume Module</span>
+            </div>
+            <div class="module-icon-wrap icon-blue">
+                <i class="fa-solid fa-file-lines"></i>
+            </div>
+            <h3>ATS Resume Analyzer</h3>
+            <p>
+                Uploads and parses resumes in PDF format or text. Analyzes formatting, computes a 0-100 ATS score, detects missing technical keywords, and provides bullet-point improvement suggestions.
+            </p>
+            <ul class="feature-bullets">
+                <li><i class="fa-solid fa-check"></i> PDF extraction using PyPDF2 binary streams</li>
+                <li><i class="fa-solid fa-check"></i> Section-wise breakdown (Experience, Skills, Education)</li>
+                <li><i class="fa-solid fa-check"></i> Missing ATS keywords detection</li>
+            </ul>
+            <a href="/resume-analyzer" class="btn-module">Open Module 1 <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <!-- Module 2 -->
+        <div class="module-card">
+            <div class="module-top">
+                <span class="module-num">02</span>
+                <span class="module-tag">Matching Module</span>
+            </div>
+            <div class="module-icon-wrap icon-green">
+                <i class="fa-solid fa-bullseye"></i>
+            </div>
+            <h3>Job Description Matcher</h3>
+            <p>
+                Compares a candidate's resume with any target job description. Computes match percentage, lists matched versus missing qualifications, and generates a personalized upskilling roadmap.
+            </p>
+            <ul class="feature-bullets">
+                <li><i class="fa-solid fa-check"></i> Semantic alignment calculation (%)</li>
+                <li><i class="fa-solid fa-check"></i> Categorized matched and missing skills taxonomy</li>
+                <li><i class="fa-solid fa-check"></i> Tailored 1st-person summary generation</li>
+            </ul>
+            <a href="/job-matcher" class="btn-module">Open Module 2 <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <!-- Module 3 -->
+        <div class="module-card">
+            <div class="module-top">
+                <span class="module-num">03</span>
+                <span class="module-tag">Interview Module</span>
+            </div>
+            <div class="module-icon-wrap icon-purple">
+                <i class="fa-solid fa-user-check"></i>
+            </div>
+            <h3>AI Mock Interview Prep</h3>
+            <p>
+                Generates role-specific behavioral, technical, and situational interview questions. Allows users to type responses and evaluates them against the industry-standard STAR methodology.
+            </p>
+            <ul class="feature-bullets">
+                <li><i class="fa-solid fa-check"></i> 6 categorized interview questions with difficulty tags</li>
+                <li><i class="fa-solid fa-check"></i> STAR (Situation-Task-Action-Result) audit</li>
+                <li><i class="fa-solid fa-check"></i> 1-10 scoring with ideal benchmark answers</li>
+            </ul>
+            <a href="/interview-prep" class="btn-module">Open Module 3 <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </div>
+</div>
+{% endblock %}
